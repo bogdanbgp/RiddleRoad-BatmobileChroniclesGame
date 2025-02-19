@@ -4,17 +4,16 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        // create the game window
-        JFrame frame = new JFrame("movie trivia game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // close when done
-        frame.setSize(800, 600); // window size
+        JFrame frame = new JFrame("Movie Trivia Game");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600); // Set the size of the window
 
-        // set up start screen
+        // Start screen
         StartScreenPanel startScreen = new StartScreenPanel(frame);
         frame.setContentPane(startScreen);
-        frame.setVisible(true); // display
+        frame.setVisible(true);
 
-        // center the window
-        frame.setLocationRelativeTo(null);
+        // Center the window on the screen
+        frame.setLocationRelativeTo(null);  // This will center the window
     }
 }

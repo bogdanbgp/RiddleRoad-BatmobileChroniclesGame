@@ -14,53 +14,53 @@ public class GamePanel extends JPanel implements ActionListener {
     private Image batmobileImage, riddlerImage, environmentImage;
 
     private Timer timer;
-    private boolean engineOn = false; // engine on / off
-    private boolean riddlerVisible = false; // riddler's car visible yes/no
-    private boolean gameEnded = false; // game over false by default
-    private boolean triviaActive = false; // trivia question false by default
-    private boolean triviaCooldown = false; // wait before next trivia
+    private boolean engineOn = false; // Whether the Batmobile's engine is on or not
+    private boolean riddlerVisible = false; // Whether the Riddler's car is visible
+    private boolean gameEnded = false; // Whether the game is over
+    private boolean triviaActive = false; // Whether a trivia question is currently active
+    private boolean triviaCooldown = false; // Whether there's a cooldown period after answering a trivia question
 
-    private int batmanX = 400, batmanY = 325; // batmobile pos
-    private int riddlerX = 900, riddlerY = 255; // riddler pos
-    private int distanceTraveled = 0; // miles traveled by batmobile (get trivia after traveling X miles)
+    private int batmanX = 400, batmanY = 325; // Position of the Batmobile on screen
+    private int riddlerX = 900, riddlerY = 255; // Position of the Riddler's car
+    private int distanceTraveled = 0; // Total miles traveled by Batmobile
 
-    private int batmobileWidth = 140, batmobileHeight = 60; // batmobile size
-    private int riddlerWidth = 140, riddlerHeight = 61; // riddler size
+    private int batmobileWidth = 140, batmobileHeight = 60; // Size of the Batmobile
+    private int riddlerWidth = 140, riddlerHeight = 61; // Size of the Riddler's car
 
-    private int roadOffsetX = 0; // road scroll
+    private int roadOffsetX = 0; // Horizontal offset for the scrolling road background
 
-    private int correctAnswers = 0; // correct answers counter
-    private int incorrectAnswers = 0; // wrong answers counter
-    private int triviaIndex = 0; // trivia question index
+    private int correctAnswers = 0; // Number of correct trivia answers
+    private int incorrectAnswers = 0; // Number of incorrect trivia answers
+    private int triviaIndex = 0; // Index for the trivia questions
 
-    private static final int MILES_TO_NEXT_RIDDLER = 500; // when riddler shows up (with trivia)
-    private static final int RIDDLER_SPEED = 5; // riddler's speed
-    private static final int MAX_QUESTIONS = 100; // max trivia questions (in MovieTrivia class)
+    private static final int MILES_TO_NEXT_RIDDLER = 500; // Distance before the Riddler appears
+    private static final int RIDDLER_SPEED = 5; // Speed at which the Riddler's car moves
+    private static final int MAX_QUESTIONS = 100; // Maximum number of trivia questions
 
-    private JButton startEngineButton, stopEngineButton; // start/stop engine buttons
+    private JButton startEngineButton, stopEngineButton; // Buttons for starting and stopping the Batmobile engine
 
     private int progressBarX = 230;
     private int progressBarY = 70;
     private int progressBarWidth = 270;
     private int progressBarHeight = 10;
 
-    private boolean isDPressed = false; // is d pressed?
-    private boolean isDPhysicallyPressed = false; // was d pressed physically?
+    private boolean isDPressed = false; // Whether the 'D' key is being pressed
+    private boolean isDPhysicallyPressed = false; // Whether the 'D' key was physically pressed
 
     public GamePanel(JFrame frame, String selectedVehicle) {
         this.frame = frame;
 
-        // load batmobile and riddler images
+        // Load images for the Batmobile, Riddler, and the environment
         loadCarImages();
         loadBackgroundImage();
 
-        // set up the panel
+        // Set up the panel
         setBackground(Color.CYAN);
         setPreferredSize(new Dimension(800, 600));
         setFocusable(true);
         requestFocusInWindow();
 
-        // style and action for start button
+        // Initialize and style the Start button
         startEngineButton = new JButton("Start Engine") {
             @Override
             public void paintComponent(Graphics g) {
@@ -74,7 +74,7 @@ public class GamePanel extends JPanel implements ActionListener {
             }
         };
 
-        // button settings
+        // Set button properties and add it to the panel
         startEngineButton.setBounds(320, 250, 150, 50);
         startEngineButton.setFont(new Font("Arial", Font.BOLD, 18));
         startEngineButton.setForeground(Color.WHITE);
@@ -84,7 +84,7 @@ public class GamePanel extends JPanel implements ActionListener {
         startEngineButton.addActionListener(e -> startEngine());
         add(startEngineButton);
 
-        // stop engine button
+        // Initialize and style the Stop button (hidden by default)
         stopEngineButton = new JButton("Stop Engine");
         stopEngineButton.setBounds(320, 250, 150, 50);
         stopEngineButton.setFont(new Font("Arial", Font.BOLD, 18));
@@ -93,10 +93,10 @@ public class GamePanel extends JPanel implements ActionListener {
         stopEngineButton.setOpaque(true);
         stopEngineButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         stopEngineButton.addActionListener(e -> stopEngine());
-        stopEngineButton.setVisible(false); // hide it initially
+        stopEngineButton.setVisible(false); // Hide the stop button initially
         add(stopEngineButton);
 
-        // key listener for controlling batmobile
+        // Handles key events for controlling the Batmobile
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -117,12 +117,12 @@ public class GamePanel extends JPanel implements ActionListener {
             }
         });
 
-        // timer for game loop
+        // Start the game loop with a timer (16ms interval)
         timer = new Timer(16, this);
         timer.start();
     }
 
-    // load images for batmobile and riddler
+    // Load the Batmobile and Riddler images
     private void loadCarImages() {
         try {
             batmobileImage = loadImageResource("/images/batman.png", batmobileWidth, batmobileHeight);
@@ -132,7 +132,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    // load background image
+    // Load the background image (the environment)
     private void loadBackgroundImage() {
         try {
             environmentImage = ImageIO.read(getClass().getResource("/images/environment.png"));
@@ -141,7 +141,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    // utility to load image and scale
+    // Utility method to load an image from resources and scale it
     private Image loadImageResource(String resourcePath, int width, int height) {
         try {
             Image image = ImageIO.read(getClass().getResource(resourcePath));
@@ -152,31 +152,31 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    // start engine
+    // Start the Batmobile engine
     private void startEngine() {
         engineOn = true;
-        startEngineButton.setVisible(false); // hide start button
-        stopEngineButton.setVisible(true); // show stop button
+        startEngineButton.setVisible(false); // Hide the start button
+        stopEngineButton.setVisible(true); // Show the stop button
         repaint();
     }
 
-    // stop engine
+    // Stop the Batmobile engine
     private void stopEngine() {
         engineOn = false;
-        startEngineButton.setVisible(true); // show start button
-        stopEngineButton.setVisible(false); // hide stop button
+        startEngineButton.setVisible(true); // Show the start button
+        stopEngineButton.setVisible(false); // Hide the stop button
         repaint();
     }
 
     @Override
-    // custom drawing for the game screen
+    // Override the paintComponent method to handle custom drawing
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         drawBackground(g);
         g.drawImage(batmobileImage, batmanX - batmobileWidth / 2, batmanY - batmobileHeight / 2, null);
 
-        // riddler car
+        // If the Riddler is visible, draw his car
         if (riddlerVisible) {
             g.drawImage(riddlerImage, riddlerX - riddlerWidth / 2, riddlerY - riddlerHeight / 2, null);
         }
@@ -188,36 +188,36 @@ public class GamePanel extends JPanel implements ActionListener {
 
         drawMiniProgressBar(g);
 
-        // if game ended
+        // If the game has ended, display the end message
         if (gameEnded) {
             g.setFont(new Font("Arial", Font.BOLD, 24));
             g.drawString("Game Over! You got " + correctAnswers + " correct answers!", 250, 300);
         }
     }
 
-    // draw background (moving road)
+    // Draw the background (scrolling road effect)
     private void drawBackground(Graphics g) {
         int backgroundWidth = 640;
         int backgroundHeight = 580;
         Image scaledBackground = environmentImage.getScaledInstance(backgroundWidth, backgroundHeight, Image.SCALE_SMOOTH);
 
-        // repeating background for moving effect
+        // Draw the repeating background for a moving road effect
         for (int x = roadOffsetX % scaledBackground.getWidth(null); x < getWidth(); x += scaledBackground.getWidth(null)) {
             g.drawImage(scaledBackground, x, 0, null);
         }
     }
 
-    // draw the mini progress bar at top
+    // Draw the mini progress bar at the top
     private void drawMiniProgressBar(Graphics g) {
         g.setColor(Color.GRAY);
         g.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
 
-        // fill progress bar based on answers
+        // Fill the progress bar based on correct and incorrect answers
         int progress = (correctAnswers + incorrectAnswers) * progressBarWidth / MAX_QUESTIONS;
         g.setColor(Color.GREEN);
         g.fillRect(progressBarX, progressBarY, progress, progressBarHeight);
 
-        // tiny batmobile to show progress
+        // Draw a tiny Batmobile to show progress
         int miniWidth = batmobileWidth / 4;
         int miniHeight = batmobileHeight / 4;
         int miniX = progressBarX + progress - miniWidth / 2;
@@ -233,13 +233,13 @@ public class GamePanel extends JPanel implements ActionListener {
         drawCheckeredFlag(g, progressBarX + progressBarWidth + 10, progressBarY - 2);
     }
 
-    // draw checkered flag at progress bar end
+    // Draw a checkered flag at the end of the progress bar
     private void drawCheckeredFlag(Graphics g, int x, int y) {
         int flagWidth = 30;
         int flagHeight = 10;
         int squareSize = flagWidth / 5;
 
-        // checkerboard pattern
+        // Checkerboard pattern
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 2; j++) {
                 g.setColor((i + j) % 2 == 0 ? Color.BLACK : Color.WHITE);
@@ -251,29 +251,29 @@ public class GamePanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (engineOn && !gameEnded) {
-            // move batmobile, increase distance if 'D' pressed
+            // Move the Batmobile and increase distance if 'D' is pressed
             if (isDPressed) {
                 roadOffsetX -= 4;
                 distanceTraveled += 2;
 
-                // riddler shows up after enough miles
+                // If the Batmobile has traveled enough distance, show the Riddler
                 if (!riddlerVisible && distanceTraveled >= MILES_TO_NEXT_RIDDLER) {
                     riddlerVisible = true;
                     riddlerX = getWidth();
                 }
             }
 
-            // move riddler's car
+            // Move the Riddler's car
             if (riddlerVisible) {
                 riddlerX -= RIDDLER_SPEED;
 
-                // check for collision with riddler
+                // Check if the Batmobile collides with the Riddler's car
                 if (!triviaActive && !triviaCooldown && isCollisionWithRiddler()) {
                     triviaActive = true;
                     startTrivia();
                 }
 
-                // reset riddler if offscreen
+                // Reset the Riddler's state if he goes off-screen
                 if (riddlerX < -riddlerWidth) {
                     resetRiddlerState();
                 }
@@ -283,36 +283,42 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    // check if batmobile collides with riddler's car
+    // Check if the Batmobile collides with the Riddler's car
     private boolean isCollisionWithRiddler() {
+        // Check if the right edge of the Batmobile overlaps with the left edge of the Riddler's car
         boolean rightEdgeCollision = batmanX + batmobileWidth / 2 >= riddlerX - riddlerWidth / 2;
+
+        // Check if the left edge of the Batmobile overlaps with the right edge of the Riddler's car
         boolean leftEdgeCollision = batmanX - batmobileWidth / 2 <= riddlerX + riddlerWidth / 2;
+
+        // Return true if both conditions are satisfied, indicating a collision
         return rightEdgeCollision && leftEdgeCollision;
     }
 
-    // reset riddler after disappearing
+    // Reset the Riddler's state after he disappears off the screen
     private void resetRiddlerState() {
         riddlerVisible = false;
         riddlerX = -riddlerWidth;
         distanceTraveled = 0;
     }
 
-    // stop movement temporarily after collision
+    // Stop the Batmobile's movement temporarily after a collision
     private void stopMovement() {
         isDPressed = false;
+
         new Timer(1000, e -> isDPhysicallyPressed = false).start();
     }
 
-    // start trivia question
+    // Start the trivia question
     private void startTrivia() {
         if (triviaIndex >= MAX_QUESTIONS) {
-            endGame(); // end if all questions are done
+            endGame(); // End the game if all trivia questions are answered
             return;
         }
 
         stopMovement();
 
-        // get trivia question and options
+        // Get the trivia question and options
         String[] trivia = MovieTrivia.triviaMap.get(triviaIndex + 1);
         if (trivia == null) return;
 
@@ -326,42 +332,44 @@ public class GamePanel extends JPanel implements ActionListener {
 
         String fullQuestion = movieTitle + ": " + question;
 
-        // show trivia question
+        // Display the trivia question in a dialog
         String answer = (String) JOptionPane.showInputDialog(this, fullQuestion, "Riddle me this", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (answer != null && answer.equals(choices[0])) {
-            correctAnswers++; // correct answer
+            correctAnswers++; // Correct answer
             JOptionPane.showMessageDialog(this, "Correct!", "Correct!", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            incorrectAnswers++; // wrong answer
+            incorrectAnswers++; // Incorrect answer
             JOptionPane.showMessageDialog(this, "Incorrect! The correct answer was: " + choices[0], "Incorrect!", JOptionPane.ERROR_MESSAGE);
         }
 
-        triviaIndex++; // next question
-        triviaActive = false; // reset trivia state
+        triviaIndex++; // Move to the next trivia question
+        triviaActive = false; // Reset trivia state
 
-        startCooldown(); // cooldown before next trivia
+        startCooldown(); // Start the cooldown period before the next trivia question
 
-        repaint();
-
+        // Repaint the screen
         if (correctAnswers + incorrectAnswers <= MAX_QUESTIONS) {
             repaint();
         }
 
+        // If the 'D' key is still pressed, continue the Batmobile movement
         if (isDPhysicallyPressed) {
             isDPressed = true;
         }
     }
 
-    // cooldown after trivia
+    // Start the cooldown period after answering a trivia question
     private void startCooldown() {
         triviaCooldown = true;
+
+        // Set a timer for the cooldown period
         Timer cooldownTimer = new Timer(3000, e -> triviaCooldown = false);
         cooldownTimer.setRepeats(false);
         cooldownTimer.start();
     }
 
-    // end game and show result
+    // End the game and display the result
     public void endGame() {
         gameEnded = true;
         repaint();
