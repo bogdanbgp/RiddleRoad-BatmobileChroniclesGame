@@ -9,90 +9,89 @@ public class StartScreenPanel extends JPanel {
 
     public StartScreenPanel(JFrame frame) {
         this.frame = frame;
-        setLayout(new GridBagLayout()); // Use GridBagLayout for precise control over positioning
-        setBackground(new Color(0, 0, 0)); // Default background is black
+        setLayout(new GridBagLayout()); // layout settings
+        setBackground(new Color(0, 0, 0)); // black background, easy on the eyes
 
-        // Title Label: Movie Trivia Game (Smaller size)
+        // title label
         JLabel title = new JLabel("Riddle Road: The Batmobile Chronicles", SwingConstants.CENTER);
-        title.setFont(new Font("Lobster", Font.BOLD, 30)); // Beautiful font, Gotham-esque
-        title.setForeground(new Color(255, 223, 186)); // Creamy light color for the title
-        title.setOpaque(false);
+        title.setFont(new Font("Lobster", Font.BOLD, 30)); // cool font for title
+        title.setForeground(new Color(255, 223, 186)); // light color text for visibility
+        title.setOpaque(false); // no background color for title
 
-        // Constraints for the title
+        // title positioning
         GridBagConstraints gbcTitle = new GridBagConstraints();
         gbcTitle.gridx = 0;
         gbcTitle.gridy = 0;
-        gbcTitle.insets = new Insets(0, 0, 20, 0); // Margin at the bottom
+        gbcTitle.insets = new Insets(0, 0, 20, 0); // space below title
         add(title, gbcTitle);
 
-        // Panel for buttons with padding
+        // panel for buttons
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridBagLayout()); // Use GridBagLayout for centering
-        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new GridBagLayout()); // nicely center the buttons
+        buttonPanel.setOpaque(false); // no background for buttons
 
-        // Constraints for centering the buttons
+        // button constraints
         GridBagConstraints gbcButton = new GridBagConstraints();
         gbcButton.gridx = 0;
         gbcButton.gridy = 0;
-        gbcButton.insets = new Insets(20, 20, 20, 20); // Add space around buttons
-        buttonPanel.add(createCustomButton("Start Game", new Color(0, 0, 0), new Color(255, 255, 255)), gbcButton); // Dark button
+        gbcButton.insets = new Insets(20, 20, 20, 20); // space between buttons
+        buttonPanel.add(createCustomButton("Start Game", new Color(0, 0, 0), new Color(255, 255, 255)), gbcButton); // black button
 
         gbcButton.gridy = 1;
-        buttonPanel.add(createCustomButton("Exit", new Color(255, 82, 82), new Color(255, 255, 255)), gbcButton); // Red Exit button
+        buttonPanel.add(createCustomButton("Exit", new Color(255, 82, 82), new Color(255, 255, 255)), gbcButton); // red button
 
-        // Add button panel to the main panel
+        // add button panel to screen
         GridBagConstraints gbcButtonPanel = new GridBagConstraints();
         gbcButtonPanel.gridx = 0;
         gbcButtonPanel.gridy = 1;
-        gbcButtonPanel.insets = new Insets(20, 0, 0, 0); // Move button panel down a bit
+        gbcButtonPanel.insets = new Insets(20, 0, 0, 0); // space above button panel
         add(buttonPanel, gbcButtonPanel);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); // Always call super.paintComponent(g) to ensure proper rendering
-        // Create a dark gradient background
+        super.paintComponent(g); // important for proper rendering
+        // gradient background effect
         Graphics2D g2d = (Graphics2D) g;
         GradientPaint gradient = new GradientPaint(0, 0, new Color(0, 0, 0), 0, getHeight(), new Color(30, 30, 30));
-        g2d.setPaint(gradient);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+        g2d.setPaint(gradient); // apply the gradient
+        g2d.fillRect(0, 0, getWidth(), getHeight()); // fill with gradient
     }
 
-    // Create a custom button with gradient and round corners
+    // custom button with rounded corners
     private JButton createCustomButton(String text, Color background, Color textColor) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 20)); // Modern rounded font
+        button.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 20)); // clean font
         button.setForeground(textColor);
         button.setBackground(background);
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(250, 50));
+        button.setFocusPainted(false); // no focus painting
+        button.setPreferredSize(new Dimension(250, 50)); // button size
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(background.darker(), 2),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20))); // Add padding inside the button
+                BorderFactory.createEmptyBorder(10, 20, 10, 20))); // border and padding
 
-        // Adding smooth gradient background
+        // make it look smooth
         button.setOpaque(true);
-        button.setBorderPainted(false);
+        button.setBorderPainted(false); // no border paint
 
-        // Action listeners for buttons
+        // button click actions
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (text.equals("Start Game")) {
-                    showVehicleSelectionScreen();
+                    showVehicleSelectionScreen(); // go to vehicle selection
                 } else if (text.equals("Exit")) {
-                    System.exit(0);
+                    System.exit(0); // close the app
                 }
             }
         });
-
-        return button;
+            return button;
     }
 
     private void showVehicleSelectionScreen() {
-        // Transition to the next screen (vehicle selection)
+        // method for vehicle selection screen
         BatmobileOverviewPanel vehicleSelectionPanel = new BatmobileOverviewPanel(frame);
-        frame.setContentPane(vehicleSelectionPanel);
-        frame.revalidate();
+        frame.setContentPane(vehicleSelectionPanel); // set the new screen
+        frame.revalidate(); // revalidate the frame to update the view
     }
 }
