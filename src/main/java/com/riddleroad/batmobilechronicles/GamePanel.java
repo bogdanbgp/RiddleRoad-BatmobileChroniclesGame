@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public GamePanel(JFrame frame, String selectedVehicle) {
         this.frame = frame;
 
-        // load batmobile and riddler images
+        // load batmobile and riddler images, background
         loadCarImages();
         loadBackgroundImage();
 
